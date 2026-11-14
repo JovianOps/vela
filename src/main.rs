@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::io::{BufRead, Write};
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -52,9 +52,21 @@ fn main() {
             buf.save(path).expect("save");
             println!("{} line(s) changed", n);
         }
-        other => println!("unknown command '{}'", other),
+        "--version" | "-v" => println!("vela {}", env!("CARGO_PKG_VERSION")),
+        "--help" | "-h" => usage(),
+        other => {
+            println!("unknown command '{}'", other);
+            usage();
+        }
     }
     let _ = std::io::stdout().flush();
+}
+
+fn usage() {
+    println!(
+        "vela {} — a small text editor core\\n\\n  vela show <file>              numbered, syntax-highlighted view\\n  vela stats <file>             lines, chars, bytes\\n  vela find <pat> <file>        first matching line\\n  vela replace <pat> <with> <file>  replace in place, prints the count\\n  vela --version",
+        env!("CARGO_PKG_VERSION")
+    );
 }
 
 fn need<'a>(args: &'a [String], i: usize, usage: &str) -> &'a str {
