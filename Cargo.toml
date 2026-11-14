@@ -1,0 +1,8 @@
+[package]
+name = "vela"
+version = "0.1.0"
+edition = "2021"
+description = "A small, fast text editor core: buffer, cursor, find, syntax highlighting, file I/O"
+license = "MIT"
+
+[dependencies]
