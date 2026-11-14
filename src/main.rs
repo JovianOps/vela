@@ -1,14 +1,40 @@
-use std::io::Write;
+use std::io::{BufRead, Write};
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.is_empty() {
-        usage();
+        // double-clicked: start the editor and open it, so the window does not
+        // just flash and close
+        let root = std::env::current_dir().unwrap_or_else(|_| ".".into());
+        let port = 8420u16;
+        let url = format!("http://127.0.0.1:{}", port);
+        println!("vela — starting the editor at {}", url);
+        println!("root: {}", root.display());
+        println!("(close this window to stop)");
+        let _ = open_browser(&url);
+        if let Err(e) = vela::serve::serve(port, root) {
+            eprintln!("serve failed: {}", e);
+            pause_on_error();
+            std::process::exit(1);
+        }
         return;
     }
 
-    let cmd = args[0].as_str();
-    let rest = &args[1..];
+    // a leading flag means "serve" (vela --port 9000 --root ./x)
+    let cmd_owned: String;
+    let cmd = if args[0].starts_with('-') && args[0] != "--help" && args[0] != "-h"
+        && args[0] != "--version" && args[0] != "-v"
+    {
+        cmd_owned = "serve".to_string();
+        cmd_owned.as_str()
+    } else {
+        args[0].as_str()
+    };
+    let rest: &[String] = if cmd == "serve" && args[0].starts_with('-') {
+        &args[..]
+    } else {
+        &args[1..]
+    };
 
     match cmd {
         "show" => {
@@ -86,6 +112,21 @@ fn main() {
         }
     }
     let _ = std::io::stdout().flush();
+}
+
+/// Open the default browser. `start` is a cmd builtin, so it goes through cmd.
+fn open_browser(url: &str) -> std::io::Result<()> {
+    std::process::Command::new("cmd")
+        .args(["/c", "start", "", url])
+        .spawn()?;
+    Ok(())
+}
+
+/// Keep the window open long enough to read the error when double-clicked.
+fn pause_on_error() {
+    eprintln!("Press Enter to close...");
+    let mut line = String::new();
+    let _ = std::io::stdin().read_line(&mut line);
 }
 
 fn usage() {

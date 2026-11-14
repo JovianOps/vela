@@ -41,11 +41,22 @@ pub fn serve(port: u16, root: PathBuf) -> std::io::Result<()> {
 }
 
 fn find_ui_dir() -> Option<PathBuf> {
-    let candidates = ["ui/dist", "ui"];
-    for c in candidates {
-        let p = PathBuf::from(c);
-        if p.join("index.html").exists() {
-            return Some(p);
+    // resolve next to the executable, not the working directory: a double-click
+    // starts in an arbitrary folder
+    let mut roots: Vec<PathBuf> = Vec::new();
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            roots.push(dir.to_path_buf());
+        }
+    }
+    roots.push(PathBuf::from("."));
+
+    for root in roots {
+        for c in ["ui/dist", "ui"] {
+            let p = root.join(c);
+            if p.join("index.html").exists() {
+                return Some(p);
+            }
         }
     }
     None
