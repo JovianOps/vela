@@ -1,0 +1,3 @@
+[build]
+# static CRT: the exe must not need the Visual C++ redistributable to start
+rustflags = ["-C", "target-feature=+crt-static"]
