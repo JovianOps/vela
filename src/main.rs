@@ -1,9 +1,9 @@
-use std::io::{BufRead, Write};
+use std::io::Write;
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.is_empty() {
-        println!("vela — a small text editor core\n\n  vela show <file>            numbered, syntax-highlighted view\n  vela stats <file>           lines, chars, bytes\n  vela find <pat> <file>      first matching line\n  vela replace <pat> <with> <file>   replace in place, prints the count");
+        usage();
         return;
     }
 
