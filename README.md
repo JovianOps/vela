@@ -31,11 +31,21 @@ $ vela replace "42" "7" main.rs
 1 line(s) changed
 ```
 
+## Run
+
+`vela.exe` is in the repository root. Run it from a terminal:
+
+```
+vela show <file>
+```
+
+Double-clicking it prints the help and waits, so nothing flashes closed. There is
+nothing to install and no runtime to fetch — Node and Python are not involved.
+
 ## Build
 
 ```bash
 cargo build --release
-./target/release/vela show <file>
 ```
 
 Rust 1.8x or newer. Nothing else — no crates, no runtime, no GC.
