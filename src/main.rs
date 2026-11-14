@@ -52,6 +52,32 @@ fn main() {
             buf.save(path).expect("save");
             println!("{} line(s) changed", n);
         }
+        "serve" => {
+            let mut port = 8420u16;
+            let mut root = std::env::current_dir().unwrap_or_else(|_| ".".into());
+            let mut i = 0;
+            while i < rest.len() {
+                match rest[i].as_str() {
+                    "--port" => {
+                        if let Some(p) = rest.get(i + 1) {
+                            port = p.parse().unwrap_or(8420);
+                        }
+                        i += 2;
+                    }
+                    "--root" => {
+                        if let Some(r) = rest.get(i + 1) {
+                            root = r.into();
+                        }
+                        i += 2;
+                    }
+                    _ => i += 1,
+                }
+            }
+            if let Err(e) = vela::serve::serve(port, root) {
+                eprintln!("serve failed: {}", e);
+                std::process::exit(1);
+            }
+        }
         "--version" | "-v" => println!("vela {}", env!("CARGO_PKG_VERSION")),
         "--help" | "-h" => usage(),
         other => {
@@ -64,7 +90,8 @@ fn main() {
 
 fn usage() {
     println!(
-        "vela {} — a small text editor core\\n\\n  vela show <file>              numbered, syntax-highlighted view\\n  vela stats <file>             lines, chars, bytes\\n  vela find <pat> <file>        first matching line\\n  vela replace <pat> <with> <file>  replace in place, prints the count\\n  vela --version",
+        "vela {} — a small text editor core\\n\\n  vela show <file>              numbered, syntax-highlighted view\\n  vela stats <file>             lines, chars, bytes\\n  vela find <pat> <file>        first matching line\\n  vela replace <pat> <with> <file>  replace in place, prints the count\\n  vela serve [--port 8420] [--root <dir>]  serve the web UI and file API
+  vela --version",
         env!("CARGO_PKG_VERSION")
     );
 }

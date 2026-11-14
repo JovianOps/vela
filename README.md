@@ -31,7 +31,30 @@ $ vela replace "42" "7" main.rs
 1 line(s) changed
 ```
 
-## Run
+## The editor
+
+```bash
+vela serve            # http://127.0.0.1:8420
+```
+
+One binary: it serves the UI (ui/dist) and a JSON API backed by the Rust core.
+The browser never touches the filesystem — every read and write goes through the
+core, so the same rules apply (UTF-8, and no path may escape `--root`).
+
+```bash
+vela serve --port 8420 --root C:/path/to/project
+```
+
+API: `GET /api/list?dir=`, `GET /api/file?path=`, `POST /api/save`,
+`GET /api/highlight?path=&line=`.
+
+The UI is React + Tailwind in `ui/`:
+
+```bash
+cd ui && npm install && npm run build   # writes ui/dist
+```
+
+## CLI
 
 `vela.exe` is in the repository root. Run it from a terminal:
 

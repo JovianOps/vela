@@ -3,6 +3,8 @@
 //! The buffer, cursor, find and syntax highlighting a GUI editor needs, with no
 //! dependencies: the host owns the window and the keyboard, vela owns the text.
 
+pub mod serve;
+
 use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq)]
